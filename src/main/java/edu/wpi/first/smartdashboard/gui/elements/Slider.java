@@ -27,7 +27,7 @@ public class Slider extends AbstractValueWidget {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         JLabel nameLabel = new JLabel(getFieldName());
-        valueField = new EditableNumberValueSlider("gamer");
+        valueField = new EditableNumberValueSlider(getFieldName());
         valueField.setMinimum(0);
         valueField.setMaximum(100);
 

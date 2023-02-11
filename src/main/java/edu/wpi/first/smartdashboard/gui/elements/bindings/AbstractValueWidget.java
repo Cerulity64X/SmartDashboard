@@ -78,11 +78,6 @@ public abstract class AbstractValueWidget extends Widget {
       super(new BindableTableEntry(Robot.getTable(), key));
       setNumberBinding(this);
     }
-
-    @Override
-    protected void valueChanged(double val) {
-      setValue(val);
-    }
   }
 
 

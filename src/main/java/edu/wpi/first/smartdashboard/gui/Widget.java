@@ -233,17 +233,17 @@ public abstract class Widget extends DisplayElement {
 
   public static class ThreadSafeSlider extends JSlider {
 
-    public ThreadSafeSlider(String text) {
-      super(0, 100);
+    public ThreadSafeSlider(int min, int max) {
+      super(min, max);
     }
 
     public ThreadSafeSlider() {
       super();
     }
 
-    public void setVal(final int text) {
+    public void setVal(final int value) {
       SwingUtilities.invokeLater(() -> {
-        super.setValue(text);
+        super.setValue(value);
       });
     }
   }
@@ -253,7 +253,7 @@ public abstract class Widget extends DisplayElement {
     public EditorTextField() {
       addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          textChanged(getText());
+          valueChanged(getText());
         }
       });
       addFocusListener(new FocusListener() {
@@ -261,13 +261,13 @@ public abstract class Widget extends DisplayElement {
         }
 
         public void focusLost(FocusEvent fe) {
-          textChanged(getText());
+          valueChanged(getText());
         }
       });
       setHorizontalAlignment(JTextField.LEFT);
     }
 
-    protected abstract void textChanged(String text);
+    protected abstract void valueChanged(String text);
   }
 
   public abstract static class EditorSlider extends ThreadSafeSlider {
@@ -341,7 +341,7 @@ public abstract class Widget extends DisplayElement {
 
     private boolean value = false;
 
-    protected void textChanged(String text) {
+    protected void valueChanged(String text) {
       if (!Boolean.toString(value).equals(text)) {
         boolean newValue = Boolean.parseBoolean(text);
         if (value != newValue) {
@@ -373,7 +373,7 @@ public abstract class Widget extends DisplayElement {
 
     private double value = Double.NaN;
 
-    protected void textChanged(String text) {
+    protected void valueChanged(String text) {
       try {
         double newValue = Double.parseDouble(text);
         if (value != newValue) {
@@ -409,24 +409,19 @@ public abstract class Widget extends DisplayElement {
 
     private double value = Double.NaN;
 
-    protected void valueChanged(String text) {
-      try {
-        double newValue = Double.parseDouble(text);
-        if (value != newValue) {
-          if (setValue(newValue)) {
-            value = newValue;
-          } else {
-            resetValue();
-          }
+    protected void valueChanged(double newValue) {
+      if (value != newValue) {
+        if (setValue(newValue)) {
+          value = newValue;
+        } else {
+          resetValue();
         }
-      } catch (NumberFormatException ex) {
-        resetValue();
       }
     }
 
     protected void resetValue() {
       if (Double.isNaN(value)) {
-        setValue(0);
+        setVal(0);
       } else {
         setBindableValue(value);
       }
@@ -435,7 +430,7 @@ public abstract class Widget extends DisplayElement {
     @Override
     public void setBindableValue(double value) {
       this.value = value;
-      setValue(value);
+      setVal((int)value);
     }
 
     protected abstract boolean setValue(double value);
@@ -445,7 +440,7 @@ public abstract class Widget extends DisplayElement {
 
     private String value = null;
 
-    protected void textChanged(String newValue) {
+    protected void valueChanged(String newValue) {
       if (!value.equals(newValue)) {
         if (setValue(newValue)) {
           value = newValue;
@@ -583,7 +578,6 @@ public abstract class Widget extends DisplayElement {
   public abstract static class BindableNumberSlider extends CeruliNumberSlider {
 
     private final NumberBindable bindable;
-
 
     public BindableNumberSlider(NumberBindable bindable) {
       this.bindable = bindable;
