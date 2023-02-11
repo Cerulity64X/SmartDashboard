@@ -14,9 +14,11 @@ public class DefaultDisplayElementRegistrar {
     DisplayElementRegistry.registerWidget(Button.class);
     DisplayElementRegistry.registerWidget(FormattedField.class);
     DisplayElementRegistry.registerWidget(LinePlot.class);
+    DisplayElementRegistry.registerWidget(ThreadedLinePlot.class);
     DisplayElementRegistry.registerWidget(ProgressBar.class);
     DisplayElementRegistry.registerWidget(SimpleDial.class);
     DisplayElementRegistry.registerWidget(TextBox.class);
+    DisplayElementRegistry.registerWidget(Slider.class);
     DisplayElementRegistry.registerWidget(CheckBox.class);
     DisplayElementRegistry.registerWidget(PIDEditor.class);
     DisplayElementRegistry.registerWidget(Chooser.class);
@@ -30,6 +32,7 @@ public class DefaultDisplayElementRegistrar {
     DisplayElementRegistry.registerStaticWidget(RobotPreferences.class);
     DisplayElementRegistry.registerStaticWidget(MjpgStreamViewerImpl.class);
     DisplayElementRegistry.registerStaticWidget(CameraServerViewer.class);
+    DisplayElementRegistry.registerStaticWidget(Rect.class);
   }
 
 }

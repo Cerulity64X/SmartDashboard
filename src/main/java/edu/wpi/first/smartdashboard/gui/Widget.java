@@ -231,6 +231,23 @@ public abstract class Widget extends DisplayElement {
     }
   }
 
+  public static class ThreadSafeSlider extends JSlider {
+
+    public ThreadSafeSlider(String text) {
+      super(0, 100);
+    }
+
+    public ThreadSafeSlider() {
+      super();
+    }
+
+    public void setVal(final int text) {
+      SwingUtilities.invokeLater(() -> {
+        super.setValue(text);
+      });
+    }
+  }
+
   public abstract static class EditorTextField extends ThreadSafeTextField {
 
     public EditorTextField() {
@@ -251,6 +268,28 @@ public abstract class Widget extends DisplayElement {
     }
 
     protected abstract void textChanged(String text);
+  }
+
+  public abstract static class EditorSlider extends ThreadSafeSlider {
+
+    public EditorSlider() {
+      addChangeListener(new ChangeListener() {
+        public void stateChanged(ChangeEvent e) {
+          valueChanged(getValue());
+        }
+      });
+      addFocusListener(new FocusListener() {
+        public void focusGained(FocusEvent fe) {
+        }
+
+        public void focusLost(FocusEvent fe) {
+          valueChanged(getValue());
+        }
+      });
+      setAlignmentX(0);
+    }
+
+    protected abstract void valueChanged(double val);
   }
 
   public static class ThreadSafeCheckBox extends JCheckBox {
@@ -361,6 +400,42 @@ public abstract class Widget extends DisplayElement {
     public void setBindableValue(double value) {
       this.value = value;
       setText(String.format("%f", Double.valueOf(value)));
+    }
+
+    protected abstract boolean setValue(double value);
+  }
+
+  public abstract static class CeruliNumberSlider extends EditorSlider implements NumberBindable {
+
+    private double value = Double.NaN;
+
+    protected void valueChanged(String text) {
+      try {
+        double newValue = Double.parseDouble(text);
+        if (value != newValue) {
+          if (setValue(newValue)) {
+            value = newValue;
+          } else {
+            resetValue();
+          }
+        }
+      } catch (NumberFormatException ex) {
+        resetValue();
+      }
+    }
+
+    protected void resetValue() {
+      if (Double.isNaN(value)) {
+        setValue(0);
+      } else {
+        setBindableValue(value);
+      }
+    }
+
+    @Override
+    public void setBindableValue(double value) {
+      this.value = value;
+      setValue(value);
     }
 
     protected abstract boolean setValue(double value);
@@ -495,6 +570,22 @@ public abstract class Widget extends DisplayElement {
 
 
     public BindableNumberField(NumberBindable bindable) {
+      this.bindable = bindable;
+    }
+
+    @Override
+    protected boolean setValue(double value) {
+      bindable.setBindableValue(value);
+      return true;
+    }
+  }
+
+  public abstract static class BindableNumberSlider extends CeruliNumberSlider {
+
+    private final NumberBindable bindable;
+
+
+    public BindableNumberSlider(NumberBindable bindable) {
       this.bindable = bindable;
     }
 
